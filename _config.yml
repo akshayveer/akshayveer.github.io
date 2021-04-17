@@ -22,7 +22,7 @@ title: Welcome
 email: akshayveer097@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   A blog of useful information related to sofware development, programming
-baseurl: "akshayveer.github.io" # the subpath of your site, e.g. /blog
+baseurl: "/akshayveer.github.io" # the subpath of your site, e.g. /blog
 url: "https://akshayveer.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: akshay_veer_
 github_username:  akshayveer
