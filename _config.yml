@@ -30,17 +30,6 @@ github_username:  akshayveer
 linkedin_username: akshayveer
 twitter_username: akshay_veer_
 
-social:
-  linkedin: akshayveer
-
-minima:
-  social_links:
-    linkedin: akshayveer
-
-author:
-  name: Akshay Veer
-  email: "akshayveer096@gmail.com"
-
 # Build settings
 theme: minima
 permalink: /:title/
