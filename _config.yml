@@ -39,6 +39,8 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
 
+google_site_verification: Ii72oWkNKXRMydhrFUS3uFV9RTRmGSC6VTYswyp3aQE
+
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
