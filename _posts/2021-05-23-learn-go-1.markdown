@@ -1,0 +1,174 @@
+---
+layout: post
+title:  "Learn Go Part-1"
+date:   2021-05-23 10:46:00 +0530
+categories: go golang backend
+description: differences in syntax or conventions between go and c, c++, java
+---
+Go is mainly designed for server side services. 
+
+#### Some common go practises
+* By convention, the package name is the same as the last element of the import path
+* file with package main is the start of program execution
+* In Go, a name is exported if it begins with a capital letter
+* Go is statically typed and we can't change type one defined, but we don't have to explicitly delcare the type it will be inferred
+* Go programs are organized into packages. A package is a collection of source files in the same directory that are compiled together. Functions, types, variables, and constants defined in one source file are visible to all other source files within the same package
+* A module is a collection of related Go packages that are released together. A repository contains one or more modules, but in general a repository contains only one module
+* A file named go.mod  declares the module path and module dependencies
+* `go mod init example.com/user/hello` to initialize a module 
+* `go install module-name` or `go install ` will create a binary and store in local go repository
+* `go mod tidy` command adds missing module requirements for imported packages and removes requirements on modules that aren't used anymore
+* You write a test by creating a file with a name ending in _test.go that contains functions named TestXXX with signature func (t *testing.T).
+* The test framework runs each such function; if the function calls a failure function such as t.Error or t.Fail, the test is considered to have failed
+* `go test` to run tests
+
+#### Functions
+* type comes after vairable name like `x int`
+* `func add(x, y int, z float32) (int, string)` we can ommit type and return multiple values. 
+* `return x, y` to return multiple values
+* It is similoar to python and also we can have `a, b := add(1, 2, 3.)` for return values in callee
+* Named return values in function declaration `func split(sum int) (x, y int)`
+* functions can be passed to other functions as `func compute(fn func(float64, float64) float64) float64`
+* function closures when you call `v = adder()` then v will have it's own sum and it will be not reset to zero evertime we call function, but it will retain the state. We can use in generating fibonnaci sequence
+{% highlight go %}
+func adder() func(int) int {
+	sum := 0
+	return func(x int) int {
+		sum += x
+		return sum
+	}
+}
+{% endhighlight %}
+* Anonymous functions are used are'nt declared at package level, they are declared dynamically. We can declare a single vairbale and assign different function changing the functionality at run time
+* A closure is a special type of anonymous function that references variables declared outside of the function itself
+* using clousures we can pass contextual data to functions which the function in isolation does not have access to 
+
+#### Variables
+* `var` keyword is use for declarting variables
+* `var c, python, java = true, false, "no!"` no need to delcare type as it is inferred
+* Outside a function, every statement begins with a keyword (`var`, `func`, and so on) and so the `:=` construct is not available
+* variable declarations may be "factored" into blocks, as with import statements `var (a int 1)`
+* `byte` is alias for `uint8` and `rune` is alias for `int32` 
+* The `int`, `uint`, and `uintptr` types are usually 32 bits wide on 32-bit systems and 64 bits wide on 64-bit systems
+* When value is not initialized they have zero value and 0 for numeric types, `""` for string, false for boolean
+* In go we have to do explicit type conversions
+* But when the right hand side contains an untyped numeric constant, the new variable may be an `int`, `float64`, or `complex128` depending on the precision of the constant
+* Constants are declared like variables, but with the `const` keyword. Constants cannot be declared using the `:=` syntax. other two syntax of `var` works
+* Numeric constants are high-precision values. An untyped constant takes the type needed by its context. If we pass to int, it will be converted to int
+`const Big = 1 << 100`
+
+#### Loop
+* Go has only for and it has three components seperated by `;` - init, condition, post
+{% highlight go %}
+for i := 0; i < 10; i++ {
+	sum += i
+}
+{% endhighlight %}
+* init and post are optional
+* while can be achived using
+{% highlight go %}
+for i < 10 {
+	sum += i
+}
+{% endhighlight %}
+* infinite loop
+{% highlight go %}
+for  {
+}
+{% endhighlight %}
+
+#### Conitions
+* similar to for, if also drops brackets around condition
+* We can have an initialization statement in if before condition
+* Variables declared inside an if short statement are also available inside any of the else blocks
+* Go switch statement is similar to c++, java etc but we don't have to add break, it will implicaly break after it matches a case statement
+* Go's switch cases need not be constants, and the values involved need not be integers
+* Switch without a condition is the same as switch true
+* A defer statement defers the execution of a function until the surrounding function returns.
+* The deferred call's arguments are evaluated immediately, but the function call is not executed until the surrounding function returns
+* Deferred function calls are pushed onto a stack. When a non deffered function returns, all stacked deferred calls are executed in last-in-first-out order
+* These are usefull when we have to do cleanup or these needed to be called right after we return (closing files)
+
+#### Pointers and Structs
+* just like in C `var p *int` and `p = &i` and `*p = 21` (dereferencing)
+* Unlike C, go does not have pointer arthemetic
+* Like C, it has struct 
+{% highlight go %}
+type Vertex struct {
+	X int
+	Y int
+}
+{% endhighlight %}
+
+and initialize using `Vertex{1, 2}`
+* Fields are accessed with `.`
+* struct pointers can be used to access values, but unlike c where we have to use `(*p).X` in go we can directly use `p.X`
+* You can list just a subset of fields by using the `Name:` syntax. (And the order of named fields is irrelevant.)
+{% highlight go %}
+var (
+	v1 = Vertex{1, 2}  // has type Vertex
+	v2 = Vertex{X: 1}  // Y:0 is implicit
+	v3 = Vertex{}      // X:0 and Y:0
+	p  = &Vertex{1, 2} 
+)
+{% endhighlight %}
+
+#### Arrays
+* two delcarations `primes := [6]int{2, 3, 5, 7, 11, 13}` and `var a [2]string`
+* slices will bring the dynamically-sized, flexible view into elements of array. These are references to orginal array.
+* `var s []int = primes[1:4]` include index 1 but does not include index 4
+* slice literals `[]bool{true, true, false}` this creates the array, then builds a slice that references it
+* slice has length and capacity which is the size of original array. If we have s[2:] and s[0] will be the second index element in original array
+* zero value of slice is nil and zero value of pointer is also nil
+* dynamic size array can be created using `b := make([]int, 0, 5) // len(b)=0, cap(b)=5`
+* slices of slices gives us 2-d array
+* append to a slice using `func append(s []T, vs ...T) []T` - If the backing array of s is too small to fit all the given values a bigger array will be allocated
+* The range form of the for loop iterates over a _slice_ or _map_ `for i, v := range pow`
+* we you don't use any value in range, then use `_` or `for i := range pow` when you want only index
+
+#### Map
+* `m = make(map[string]Vertex)` will make a map and zero value of map is nil
+* map literal initialization
+{% highlight go %}
+var m = map[string]Vertex{
+	"Bell Labs": Vertex{
+		40.68433, -74.39967,
+	},
+	"Google": Vertex{
+		37.42202, -122.08408,
+	},
+}
+
+var m = map[string]Vertex{
+	"Bell Labs": {40.68433, -74.39967},
+	"Google":    {37.42202, -122.08408},
+}
+{% endhighlight %}
+* `elem, ok = m[key]` If key is not in the map, then elem is the zero value for the map's element type and ok is false
+
+#### Syntactic sugar
+* Dynamic struct delcaration and initialization
+{% highlight go %}
+cases := []struct {
+		in, want string
+	}{
+		{"Hello, world", "dlrow ,olleH"},
+		{"Hello, 世界", "界世 ,olleH"},
+		{"", ""},
+	}
+{% endhighlight %}
+* We can use inline functions so that we can close channel when call is completed
+{% highlight go %}
+go func() {
+    list.Sort()
+    c <- 1  // Send a signal; value does not matter.
+}()
+{% endhighlight %}
+* `req := req` is legal and common pattern in go to create a new and fresh copy of variable so that it can be used in clousure go routines so that each go routine has different object instead of same object
+* named function return values are useful, as we can set them from any part of code - useful in defered functions when they want to change return value
+* `func gen(nums ...int)` is syntax for arbritary number of function argumnets
+
+###### References
+[go tour][go-tour]
+
+[go-tour]: https://tour.golang.org/

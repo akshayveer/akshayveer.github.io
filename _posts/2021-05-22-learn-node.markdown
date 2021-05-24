@@ -48,4 +48,7 @@ Recommend solution is to use `Promise`. One limitation with promise is that, we 
 
 We can also use `Async/Await` when we want to execute set of instuctions sequentially (i.e data from previous step is used by current step)
 
+`await` does not make a function actually synchronous. Promise will still get executed in background.
+This is only helpful for sequencing the function calls. so we use async in function delcaration when we use await. It is just a syntactic sugar
+
 [freecodecamp-nodejs-async]: https://www.freecodecamp.org/news/
